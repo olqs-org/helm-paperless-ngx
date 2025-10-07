@@ -1,0 +1,16 @@
+{{- if .Values.redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-redis
+  labels:
+    {{- include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: tcp-redis
+      protocol: TCP
+      name: tcp-redis
+  selector:
+    app.kubernetes.io/name: {{ include "paperless-ngx.name" . }}-redis
+    app.kubernetes.io/instance: {{ .Release.Name }}

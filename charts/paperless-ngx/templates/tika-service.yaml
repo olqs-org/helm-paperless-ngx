@@ -1,0 +1,16 @@
+{{- if .Values.tika.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-tika
+  labels:
+    {{- include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.tika.service.port }}
+      targetPort: http-tika
+      protocol: TCP
+      name: http-tika
+  selector:
+    app.kubernetes.io/name: {{ include "paperless-ngx.name" . }}-tika
+    app.kubernetes.io/instance: {{ .Release.Name }}

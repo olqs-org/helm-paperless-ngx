@@ -1,0 +1,16 @@
+{{- if .Values.gotenberg.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-gotenberg
+  labels:
+    {{- include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.gotenberg.service.port }}
+      targetPort: http-gotenberg
+      protocol: TCP
+      name: http-gotenberg
+  selector:
+    app.kubernetes.io/name: {{ include "paperless-ngx.name" . }}-gotenberg
+    app.kubernetes.io/instance: {{ .Release.Name }}

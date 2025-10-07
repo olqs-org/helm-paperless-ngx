@@ -1,0 +1,3 @@
+{{- if and .Values.postgresql.enabled .Values.postgresql.persistence.enabled (not .Values.postgresql.persistence.existingClaim) }}
+{{ include "paperless-ngx.volumeClaim" (list . "postgresql" .Values.postgresql.persistence) }}
+{{- end }}

@@ -1,0 +1,3 @@
+{{- if and .Values.redis.enabled .Values.redis.persistence.enabled (not .Values.redis.persistence.existingClaim) }}
+{{ include "paperless-ngx.volumeClaim" (list . "redis" .Values.redis.persistence) }}
+{{- end }}
