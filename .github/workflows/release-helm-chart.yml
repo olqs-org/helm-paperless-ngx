@@ -9,6 +9,10 @@ on:
       - closed
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: read
+
 jobs:
   lint-and-release:
     runs-on: ubuntu-latest
