@@ -33,6 +33,11 @@ jobs:
           git checkout "$TARGET_BRANCH"
           git pull --ff-only origin "$TARGET_BRANCH"
 
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Ensure gh-pages branch exists
         run: |
           if git ls-remote --exit-code origin gh-pages; then
@@ -44,11 +49,6 @@ jobs:
             git push origin gh-pages
             git checkout "$TARGET_BRANCH"
           fi
-
-      - name: Configure Git user
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Bump chart version
         id: bump_version
