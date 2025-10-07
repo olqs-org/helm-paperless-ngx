@@ -88,3 +88,17 @@ jobs:
           charts_dir: charts
           packages_with_index: true
           skip_existing: true
+
+      - name: Refresh Artifact Hub repository
+        env:
+          ARTIFACTHUB_REPOSITORY: ${{ secrets.ARTIFACTHUB_REPOSITORY }}
+          ARTIFACTHUB_API_KEY: ${{ secrets.ARTIFACTHUB_API_KEY }}
+        run: |
+          if [ -z "$ARTIFACTHUB_REPOSITORY" ] || [ -z "$ARTIFACTHUB_API_KEY" ]; then
+            echo "Artifact Hub secrets missing, skipping refresh."
+            exit 0
+          fi
+          curl -sSf \
+            -X POST \
+            -H "Authorization: Bearer ${ARTIFACTHUB_API_KEY}" \
+            "https://artifacthub.io/api/v1/repositories/refresh/helm/${ARTIFACTHUB_REPOSITORY}"
