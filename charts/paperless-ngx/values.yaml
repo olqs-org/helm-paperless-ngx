@@ -58,7 +58,7 @@ postgresql:
   enabled: true
   image:
     repository: docker.io/library/postgres
-    tag: "17"
+    tag: "18"
     pullPolicy: IfNotPresent
   service:
     port: 5432
