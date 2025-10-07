@@ -96,7 +96,7 @@ gotenberg:
   enabled: true
   image:
     repository: docker.io/gotenberg/gotenberg
-    tag: "8.22"
+    tag: "8.23"
     pullPolicy: IfNotPresent
   service:
     port: 3000
