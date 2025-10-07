@@ -33,6 +33,18 @@ jobs:
           git checkout "$TARGET_BRANCH"
           git pull --ff-only origin "$TARGET_BRANCH"
 
+      - name: Ensure gh-pages branch exists
+        run: |
+          if git ls-remote --exit-code origin gh-pages; then
+            git fetch origin gh-pages:refs/remotes/origin/gh-pages
+          else
+            git checkout --orphan gh-pages
+            git reset --hard
+            git commit --allow-empty -m "chore: initialize gh-pages branch"
+            git push origin gh-pages
+            git checkout "$TARGET_BRANCH"
+          fi
+
       - name: Configure Git user
         run: |
           git config user.name "github-actions[bot]"
