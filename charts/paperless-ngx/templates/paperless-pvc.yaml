@@ -1,0 +1,8 @@
+{{- $root := . -}}
+{{- $sep := "" -}}
+{{- range $name, $config := dict "data" .Values.paperless.persistence.data "media" .Values.paperless.persistence.media "export" .Values.paperless.persistence.export "consume" .Values.paperless.persistence.consume -}}
+{{- if and $config $config.enabled (not $config.existingClaim) -}}
+{{ $sep }}{{ include "paperless-ngx.volumeClaim" (list $root $name $config) }}
+{{- $sep = "\n---\n" -}}
+{{- end -}}
+{{- end -}}

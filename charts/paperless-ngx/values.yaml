@@ -1,0 +1,121 @@
+paperless:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/paperless-ngx/paperless-ngx
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    existingSecret: ""
+    secretKeys:
+      databasePasswordKey: "PAPERLESS_DBPASS"
+    values:
+      PAPERLESS_DBNAME: "paperless"
+      PAPERLESS_DBUSER: "paperless"
+      PAPERLESS_DBPASS: "paperless"
+      PAPERLESS_REDIS: "redis://{{ include \"paperless-ngx.fullname\" . }}-redis:6379"
+      PAPERLESS_DBHOST: "{{ include \"paperless-ngx.fullname\" . }}-postgresql"
+      PAPERLESS_TIKA_ENABLED: "1"
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://{{ include \"paperless-ngx.fullname\" . }}-gotenberg:3000"
+      PAPERLESS_TIKA_ENDPOINT: "http://{{ include \"paperless-ngx.fullname\" . }}-tika:9998"
+  persistence:
+    data:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      size: 10Gi
+      storageClass: ""
+      existingClaim: ""
+    media:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      size: 10Gi
+      storageClass: ""
+      existingClaim: ""
+    export:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      size: 5Gi
+      storageClass: ""
+      existingClaim: ""
+    consume:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      size: 5Gi
+      storageClass: ""
+      existingClaim: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+postgresql:
+  enabled: true
+  image:
+    repository: docker.io/library/postgres
+    tag: "17"
+    pullPolicy: IfNotPresent
+  service:
+    port: 5432
+  auth:
+    database: paperless
+    username: paperless
+    password: paperless
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    storageClass: ""
+    existingClaim: ""
+  resources: {}
+
+redis:
+  enabled: true
+  image:
+    repository: docker.io/library/redis
+    tag: "8"
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    storageClass: ""
+    existingClaim: ""
+  resources: {}
+
+gotenberg:
+  enabled: true
+  image:
+    repository: docker.io/gotenberg/gotenberg
+    tag: "8.22"
+    pullPolicy: IfNotPresent
+  service:
+    port: 3000
+  args:
+    - "gotenberg"
+    - "--chromium-disable-javascript=true"
+    - "--chromium-allow-list=file:///tmp/.*"
+  resources: {}
+
+tika:
+  enabled: true
+  image:
+    repository: docker.io/apache/tika
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    port: 9998
+  resources: {}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""

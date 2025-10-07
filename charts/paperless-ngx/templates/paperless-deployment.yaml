@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}
+  labels:
+    {{- include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.paperless.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "paperless-ngx.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "paperless-ngx.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: paperless
+          image: "{{ .Values.paperless.image.repository }}:{{ .Values.paperless.image.tag }}"
+          imagePullPolicy: {{ .Values.paperless.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            {{- if .Values.paperless.env.existingSecret }}
+            - name: PAPERLESS_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.paperless.env.existingSecret }}
+                  key: {{ .Values.paperless.env.secretKeys.databasePasswordKey }}
+            {{- end }}
+            {{- $useSecret := .Values.paperless.env.existingSecret }}
+            {{- $root := . }}
+            {{- range $key, $value := .Values.paperless.env.values }}
+            {{- if or (not $useSecret) (ne $key "PAPERLESS_DBPASS") }}
+            - name: {{ $key }}
+              value: {{ tpl $value $root | quote }}
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.paperless.persistence.data.enabled }}
+            - name: data
+              mountPath: /usr/src/paperless/data
+            {{- end }}
+            {{- if .Values.paperless.persistence.media.enabled }}
+            - name: media
+              mountPath: /usr/src/paperless/media
+            {{- end }}
+            {{- if .Values.paperless.persistence.export.enabled }}
+            - name: export
+              mountPath: /usr/src/paperless/export
+            {{- end }}
+            {{- if .Values.paperless.persistence.consume.enabled }}
+            - name: consume
+              mountPath: /usr/src/paperless/consume
+            {{- end }}
+          {{- with .Values.paperless.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- if .Values.paperless.persistence.data.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "paperless-ngx.claimName" (list . "data" .Values.paperless.persistence.data) }}
+        {{- end }}
+        {{- if .Values.paperless.persistence.media.enabled }}
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "paperless-ngx.claimName" (list . "media" .Values.paperless.persistence.media) }}
+        {{- end }}
+        {{- if .Values.paperless.persistence.export.enabled }}
+        - name: export
+          persistentVolumeClaim:
+            claimName: {{ include "paperless-ngx.claimName" (list . "export" .Values.paperless.persistence.export) }}
+        {{- end }}
+        {{- if .Values.paperless.persistence.consume.enabled }}
+        - name: consume
+          persistentVolumeClaim:
+            claimName: {{ include "paperless-ngx.claimName" (list . "consume" .Values.paperless.persistence.consume) }}
+        {{- end }}
+      {{- with .Values.paperless.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.paperless.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.paperless.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
