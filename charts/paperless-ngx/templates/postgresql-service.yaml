@@ -14,3 +14,4 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "paperless-ngx.name" . }}-postgresql
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
