@@ -68,10 +68,16 @@ jobs:
       - name: Lint chart
         run: helm lint charts/paperless-ngx
 
+      - name: Ensure CHARTS_REPO_TOKEN exists
+        if: ${{ !secrets.CHARTS_REPO_TOKEN }}
+        run: |
+          echo "CHARTS_REPO_TOKEN fehlt. Lege ein PAT mit 'Contents: Read/Write' auf olqs-org/charts an." >&2
+          exit 1        
+
       - name: Release chart
         uses: helm/chart-releaser-action@v1.7.0
         env:
-          CR_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN || secrets.GITHUB_TOKEN }}
+          CR_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN }}
           CR_OWNER: olqs-org
           CR_GIT_REPO: charts
         with:
