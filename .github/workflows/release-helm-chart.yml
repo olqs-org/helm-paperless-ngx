@@ -69,7 +69,7 @@ jobs:
         run: helm lint charts/paperless-ngx
 
       - name: Ensure CHARTS_REPO_TOKEN exists
-        if: ${{ !secrets.CHARTS_REPO_TOKEN }}
+        if: ${{ secrets.CHARTS_REPO_TOKEN == '' }}
         run: |
           echo "CHARTS_REPO_TOKEN fehlt. Lege ein PAT mit 'Contents: Read/Write' auf olqs-org/charts an." >&2
           exit 1        
