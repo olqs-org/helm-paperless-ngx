@@ -38,18 +38,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Ensure gh-pages branch exists
-        run: |
-          if git ls-remote --exit-code origin gh-pages; then
-            git fetch origin gh-pages:refs/remotes/origin/gh-pages
-          else
-            git checkout --orphan gh-pages
-            git reset --hard
-            git commit --allow-empty -m "chore: initialize gh-pages branch"
-            git push origin gh-pages
-            git checkout "$TARGET_BRANCH"
-          fi
-
       - name: Bump chart version
         id: bump_version
         run: |
@@ -83,8 +71,10 @@ jobs:
       - name: Release chart
         uses: helm/chart-releaser-action@v1.7.0
         env:
-          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CR_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN || secrets.GITHUB_TOKEN }}
         with:
+          owner: olqs-org
+          repo: charts
           charts_dir: charts
           packages_with_index: true
           skip_existing: true
