@@ -3,6 +3,17 @@ entries:
   paperless-ngx:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-10-14T14:13:40.591084376Z"
+    description: A Helm chart for deploying Paperless-ngx with optional PostgreSQL,
+      Redis, Gotenberg, and Tika services.
+    digest: 741eecfd69416aa7620a16b8217e7e70f78ed49c50c901f31f438f57fcd95517
+    name: paperless-ngx
+    type: application
+    urls:
+    - paperless-ngx-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-10-14T13:12:58.492616708Z"
     description: A Helm chart for deploying Paperless-ngx with optional PostgreSQL,
       Redis, Gotenberg, and Tika services.
@@ -45,4 +56,4 @@ entries:
     urls:
     - paperless-ngx-0.1.3.tgz
     version: 0.1.3
-generated: "2025-10-14T13:12:58.492633379Z"
+generated: "2025-10-14T14:13:40.59110211Z"
