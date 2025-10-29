@@ -83,10 +83,9 @@ jobs:
           CR_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN }}
           CR_OWNER: olqs-org
           CR_GIT_REPO: charts
-          CR_PAGES_BRANCH: ghpages
         with:
           charts_dir: charts
-          charts_repo_url: https://olqs-org.github.io/charts
+          GITHUB_REPOSITORY: olqs-org/charts
           packages_with_index: true
           skip_existing: true
 
