@@ -82,11 +82,9 @@ jobs:
         env:
           CR_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN }}
           CR_OWNER: olqs-org
-          CR_GIT_REPO: charts
-          GITHUB_REPOSITORY: olqs-org/charts
+          CR_GIT_REPO: olqs-org/charts
         with:
           charts_dir: charts
-          GITHUB_REPOSITORY: olqs-org/charts
           packages_with_index: true
           skip_existing: true
 
