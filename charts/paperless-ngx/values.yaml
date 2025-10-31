@@ -7,6 +7,49 @@ paperless:
   service:
     type: ClusterIP
     port: 8000
+  ingress:
+    enabled: false
+    # IngressClassName für Kubernetes 1.18+ (z.B. "nginx", "traefik", "istio")
+    # Leer lassen, um den Standard-Ingress-Controller zu verwenden
+    className: ""
+    # Annotations für den Ingress (z.B. für Cert-Manager, Redirects, etc.)
+    # Beispiel für Cert-Manager:
+    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    #   nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    annotations: {}
+    # Host-Konfiguration für den Ingress
+    hosts:
+      - host: paperless-ngx.local
+        paths:
+          - path: /
+            pathType: Prefix
+    # TLS-Konfiguration für HTTPS
+    # Jeder Eintrag erstellt ein TLS-Zertifikat für die angegebenen Hosts
+    # Beispiel-Konfiguration:
+    # tls:
+    #   - secretName: paperless-ngx-tls
+    #     hosts:
+    #       - paperless-ngx.example.com
+    #       - www.paperless-ngx.example.com
+    # 
+    # Hinweise:
+    # - secretName: Name des Kubernetes Secrets, der das TLS-Zertifikat enthält
+    #   Der Secret muss im gleichen Namespace erstellt werden und sollte
+    #   die Keys "tls.crt" und "tls.key" enthalten
+    # - hosts: Liste der Hostnamen, für die das Zertifikat gültig ist
+    #   Diese müssen auch in der "hosts" Liste oben definiert sein
+    #
+    # Für automatische Zertifikate mit Cert-Manager:
+    # 1. Setze die entsprechenden Annotations (siehe oben)
+    # 2. Cert-Manager erstellt automatisch den Secret mit dem angegebenen secretName
+    # 3. Beispiel:
+    #    annotations:
+    #      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    #    tls:
+    #      - secretName: paperless-ngx-tls
+    #        hosts:
+    #          - paperless-ngx.example.com
+    tls: []
   env:
     existingSecret: ""
     secretKeys:

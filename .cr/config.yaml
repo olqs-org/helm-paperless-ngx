@@ -1,0 +1,6 @@
+owner: olqs-org
+git-repo: charts
+pages-branch: gh-pages
+charts-dir: charts
+packages-with-index: true
+skip-existing: true
