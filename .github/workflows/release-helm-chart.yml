@@ -65,24 +65,44 @@ jobs:
         with:
           version: v3.14.3
 
+      - name: Install Helm CM Push plugin
+        run: helm plugin install https://github.com/chartmuseum/helm-push.git
+
       - name: Lint chart
         run: helm lint charts/paperless-ngx
 
-      - name: Ensure CHARTS_REPO_TOKEN exists
+      - name: Ensure chart repository credentials exist
         env:
-          CHARTS_REPO_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN }}
+          CHARTS_REPO_USERNAME: ${{ secrets.CHARTS_REPO_USERNAME }}
+          CHARTS_REPO_PASSWORD: ${{ secrets.CHARTS_REPO_PASSWORD }}
+          CHARTS_REPO_URL: ${{ secrets.CHARTS_REPO_URL }}
         run: |
-          if [ -z "${CHARTS_REPO_TOKEN}" ]; then
-            echo "CHARTS_REPO_TOKEN fehlt. Lege ein PAT mit Contents: Read/Write auf olqs-org/charts an." >&2
+          if [ -z "${CHARTS_REPO_USERNAME}" ]; then
+            echo "CHARTS_REPO_USERNAME fehlt. Lege ein Secret mit dem Repository-Benutzernamen an." >&2
             exit 1
-          fi 
+          fi
+          if [ -z "${CHARTS_REPO_PASSWORD}" ]; then
+            echo "CHARTS_REPO_PASSWORD fehlt. Lege ein Secret mit dem Repository-Passwort an." >&2
+            exit 1
+          fi
+          if [ -z "${CHARTS_REPO_URL}" ]; then
+            echo "CHARTS_REPO_URL fehlt. Lege ein Secret mit der Repository-URL an (z.B. https://olqs-org.github.io/charts oder oci://ghcr.io/olqs-org/charts)." >&2
+            exit 1
+          fi
 
-      - name: Release chart
-        uses: helm/chart-releaser-action@v1.7.0
+      - name: Package chart
+        run: helm package charts/paperless-ngx
+
+      - name: Push chart to repository
         env:
-          CR_TOKEN: ${{ secrets.CHARTS_REPO_TOKEN }}
-        with:
-          config: .cr/config.yaml
+          CHARTS_REPO_USERNAME: ${{ secrets.CHARTS_REPO_USERNAME }}
+          CHARTS_REPO_PASSWORD: ${{ secrets.CHARTS_REPO_PASSWORD }}
+          CHARTS_REPO_URL: ${{ secrets.CHARTS_REPO_URL }}
+        run: |
+          chart_file=$(ls paperless-ngx-*.tgz | head -n 1)
+          helm cm-push "$chart_file" "${CHARTS_REPO_URL}" \
+            --username "${CHARTS_REPO_USERNAME}" \
+            --password "${CHARTS_REPO_PASSWORD}"
 
       # - name: Refresh Artifact Hub repository
       #   env:
