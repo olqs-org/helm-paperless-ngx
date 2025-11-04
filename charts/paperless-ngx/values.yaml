@@ -2,7 +2,7 @@ paperless:
   replicaCount: 1
   image:
     repository: ghcr.io/paperless-ngx/paperless-ngx
-    tag: "2.19.3"
+    tag: "2.19.4"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -152,7 +152,7 @@ tika:
   enabled: true
   image:
     repository: docker.io/apache/tika
-    tag: "3.2.2.0"
+    tag: "3.2.3.0"
     pullPolicy: IfNotPresent
   service:
     port: 9998
