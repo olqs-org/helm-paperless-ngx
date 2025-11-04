@@ -21,6 +21,11 @@ spec:
         - name: redis
           image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
           imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              chown -R redis:redis /data 2>/dev/null || true
+              exec docker-entrypoint.sh redis-server
           ports:
             - containerPort: {{ .Values.redis.service.port }}
               name: tcp-redis
