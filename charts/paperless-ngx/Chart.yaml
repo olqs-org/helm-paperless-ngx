@@ -3,4 +3,4 @@ name: paperless-ngx
 description: A Helm chart for deploying Paperless-ngx with optional PostgreSQL, Redis, Gotenberg, and Tika services.
 type: application
 version: 0.1.16
-appVersion: "latest"
+appVersion: "2.19.3"
