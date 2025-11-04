@@ -9,40 +9,39 @@ paperless:
     port: 8000
   ingress:
     enabled: false
-    # IngressClassName für Kubernetes 1.18+ (z.B. "nginx", "traefik", "istio")
-    # Leer lassen, um den Standard-Ingress-Controller zu verwenden
+    # IngressClassName for Kubernetes 1.18+ (e.g., "nginx", "traefik", "istio")
+    # Leave empty to use the cluster's default Ingress controller
     className: ""
-    # Annotations für den Ingress (z.B. für Cert-Manager, Redirects, etc.)
-    # Beispiel für Cert-Manager:
+    # Annotations for the Ingress (e.g., Cert-Manager, redirects, etc.)
+    # Example for Cert-Manager:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     #   nginx.ingress.kubernetes.io/ssl-redirect: "true"
     annotations: {}
-    # Host-Konfiguration für den Ingress
+    # Host configuration for the Ingress
     hosts:
       - host: paperless-ngx.local
         paths:
           - path: /
             pathType: Prefix
-    # TLS-Konfiguration für HTTPS
-    # Jeder Eintrag erstellt ein TLS-Zertifikat für die angegebenen Hosts
-    # Beispiel-Konfiguration:
+    # TLS configuration for HTTPS
+    # Each entry corresponds to a TLS certificate for the specified hosts
+    # Example configuration:
     # tls:
     #   - secretName: paperless-ngx-tls
     #     hosts:
     #       - paperless-ngx.example.com
     #       - www.paperless-ngx.example.com
     # 
-    # Hinweise:
-    # - secretName: Name des Kubernetes Secrets, der das TLS-Zertifikat enthält
-    #   Der Secret muss im gleichen Namespace erstellt werden und sollte
-    #   die Keys "tls.crt" und "tls.key" enthalten
-    # - hosts: Liste der Hostnamen, für die das Zertifikat gültig ist
-    #   Diese müssen auch in der "hosts" Liste oben definiert sein
+    # Notes:
+    # - secretName: Name of the Kubernetes Secret containing the TLS certificate
+    #   The Secret must be in the same namespace and contain keys "tls.crt" and "tls.key"
+    # - hosts: List of hostnames covered by the certificate
+    #   These must also be defined in the "hosts" list above
     #
-    # Für automatische Zertifikate mit Cert-Manager:
-    # 1. Setze die entsprechenden Annotations (siehe oben)
-    # 2. Cert-Manager erstellt automatisch den Secret mit dem angegebenen secretName
-    # 3. Beispiel:
+    # For automatic certificates with Cert-Manager:
+    # 1. Add the appropriate annotations (see above)
+    # 2. Cert-Manager will create/manage the Secret with the given secretName
+    # 3. Example:
     #    annotations:
     #      cert-manager.io/cluster-issuer: "letsencrypt-prod"
     #    tls:
