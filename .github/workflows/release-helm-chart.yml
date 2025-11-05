@@ -2,9 +2,11 @@ name: Release Helm Chart
 
 on:
   push:
+    branches:
+      - master
   pull_request:
     branches:
-      - main
+      - master
     types:
       - closed
   workflow_dispatch:
@@ -16,7 +18,7 @@ permissions:
 jobs:
   lint-and-release:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || (github.event_name == 'push' && github.ref_name == 'master')
     env:
       TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
       MERGE_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
