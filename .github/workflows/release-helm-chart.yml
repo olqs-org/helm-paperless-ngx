@@ -83,6 +83,44 @@ jobs:
       - name: Render chart (schema+template validation)
         run: helm template test-render charts/paperless-ngx > /dev/null
 
+      - name: Update README with container versions from values.yaml
+        run: |
+          values_file="charts/paperless-ngx/values.yaml"
+          readme_file="charts/paperless-ngx/README.md"
+          
+          # Extract versions from values.yaml - paperless has different indentation
+          paperless_repo=$(grep -A 3 "^paperless:" "$values_file" | grep "^  repository:" | awk '{print $2}' | tr -d '"')
+          paperless_version=$(grep -A 4 "^paperless:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
+          
+          # Other services have 4-space indentation for repository, 6-space for tag
+          postgres_repo=$(grep -A 5 "^postgresql:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
+          postgres_version=$(grep -A 6 "^postgresql:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          
+          redis_repo=$(grep -A 5 "^redis:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
+          redis_version=$(grep -A 6 "^redis:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          
+          gotenberg_repo=$(grep -A 5 "^gotenberg:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
+          gotenberg_version=$(grep -A 6 "^gotenberg:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          
+          tika_repo=$(grep -A 5 "^tika:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
+          tika_version=$(grep -A 6 "^tika:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          
+          # Update README with extracted versions
+          sed -i "s|- Paperless-ngx: \`.*\`|- Paperless-ngx: \`${paperless_repo}:${paperless_version}\`|" "$readme_file"
+          sed -i "s|- PostgreSQL: \`.*\`|- PostgreSQL: \`${postgres_repo}:${postgres_version}\`|" "$readme_file"
+          sed -i "s|- Redis: \`.*\`|- Redis: \`${redis_repo}:${redis_version}\`|" "$readme_file"
+          sed -i "s|- Gotenberg: \`.*\`|- Gotenberg: \`${gotenberg_repo}:${gotenberg_version}\`|" "$readme_file"
+          sed -i "s|- Apache Tika: \`.*\`|- Apache Tika: \`${tika_repo}:${tika_version}\`|" "$readme_file"
+          
+          # Commit changes if README was modified
+          if git diff --quiet "$readme_file"; then
+            echo "No changes to README needed"
+          else
+            git add "$readme_file"
+            git commit -m "docs: update README container versions from values.yaml"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
+
       - name: Ensure chart repository credentials exist
         env:
           CHARTS_REPO_USERNAME: ${{ secrets.CHARTS_REPO_USERNAME }}
