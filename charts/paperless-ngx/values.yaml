@@ -57,6 +57,9 @@ paperless:
       PAPERLESS_DBNAME: "paperless"
       PAPERLESS_DBUSER: "paperless"
       PAPERLESS_DBPASS: "paperless"
+      # Public URL of the application, required when using Ingress for CSRF origin checks
+      # Set to your external URL, including scheme. Example: https://paperless-ngx.example.com
+      PAPERLESS_URL: "http://paperless-ngx.local"
       PAPERLESS_REDIS: "redis://{{ include \"paperless-ngx.fullname\" . }}-redis:6379"
       PAPERLESS_DBHOST: "{{ include \"paperless-ngx.fullname\" . }}-postgresql"
       PAPERLESS_TIKA_ENABLED: "1"
