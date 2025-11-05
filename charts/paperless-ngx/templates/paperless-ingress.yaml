@@ -16,10 +16,12 @@ spec:
   {{- if .Values.paperless.ingress.tls }}
   tls:
     {{- range .Values.paperless.ingress.tls }}
-    - hosts:
+    - {{- if .hosts }}
+      hosts:
         {{- range .hosts }}
         - {{ . | quote }}
         {{- end }}
+      {{- end }}
       secretName: {{ .secretName }}
     {{- end }}
   {{- end }}
