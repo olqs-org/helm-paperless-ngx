@@ -68,8 +68,11 @@ jobs:
       - name: Install Helm CM Push plugin
         run: helm plugin install https://github.com/chartmuseum/helm-push.git
 
-      - name: Lint chart
-        run: helm lint charts/paperless-ngx
+      - name: Lint chart (strict, validates values.schema.json)
+        run: helm lint charts/paperless-ngx --strict
+
+      - name: Render chart (schema+template validation)
+        run: helm template test-render charts/paperless-ngx > /dev/null
 
       - name: Ensure chart repository credentials exist
         env:
