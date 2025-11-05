@@ -12,10 +12,7 @@ Helm chart for deploying Paperless-ngx and its optional dependencies (PostgreSQL
 Install from local checkout:
 
 ```bash
-helm install paperless ./charts/paperless-ngx \
-  --set paperless.image.tag=2.19.4 \
-  --set postgresql.image.tag=18.0 \
-  --set redis.image.tag=8.2.3
+helm install paperless ./charts/paperless-ngx
 ```
 
 Enable Ingress (example with cert-manager):
