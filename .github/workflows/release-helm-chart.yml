@@ -154,16 +154,24 @@ jobs:
             --username "${CHARTS_REPO_USERNAME}" \
             --password "${CHARTS_REPO_PASSWORD}"
 
-      # - name: Refresh Artifact Hub repository
-      #   env:
-      #     ARTIFACTHUB_REPOSITORY: ${{ secrets.ARTIFACTHUB_REPOSITORY }}
-      #     ARTIFACTHUB_API_KEY: ${{ secrets.ARTIFACTHUB_API_KEY }}
-      #   run: |
-      #     if [ -z "$ARTIFACTHUB_REPOSITORY" ] || [ -z "$ARTIFACTHUB_API_KEY" ]; then
-      #       echo "Artifact Hub secrets missing, skipping refresh."
-      #       exit 0
-      #     fi
-      #     curl -sSf \
-      #       -X POST \
-      #       -H "Authorization: Bearer ${ARTIFACTHUB_API_KEY}" \
-      #       "https://artifacthub.io/api/v1/repositories/refresh/helm/${ARTIFACTHUB_REPOSITORY}"
+      - name: Refresh Artifact Hub repository
+        env:
+          ARTIFACTHUB_REPOSITORY: ${{ secrets.ARTIFACTHUB_REPOSITORY }}
+          ARTIFACTHUB_API_KEY: ${{ secrets.ARTIFACTHUB_API_KEY }}
+        run: |
+          if [ -z "$ARTIFACTHUB_REPOSITORY" ] || [ -z "$ARTIFACTHUB_API_KEY" ]; then
+            echo "Artifact Hub secrets missing. Please set ARTIFACTHUB_REPOSITORY and ARTIFACTHUB_API_KEY secrets." >&2
+            echo "Skipping Artifact Hub repository refresh."
+            exit 0
+          fi
+          echo "Refreshing Artifact Hub repository: ${ARTIFACTHUB_REPOSITORY}"
+          curl -sSf \
+            -X POST \
+            -H "Authorization: Bearer ${ARTIFACTHUB_API_KEY}" \
+            "https://artifacthub.io/api/v1/repositories/refresh/helm/${ARTIFACTHUB_REPOSITORY}"
+          if [ $? -eq 0 ]; then
+            echo "Successfully refreshed Artifact Hub repository"
+          else
+            echo "Failed to refresh Artifact Hub repository" >&2
+            exit 1
+          fi
