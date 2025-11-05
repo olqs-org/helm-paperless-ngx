@@ -7,6 +7,8 @@ metadata:
     {{- include "paperless-ngx.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  strategy:
+    type: {{ .Values.redis.strategy.type | default "Recreate" }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "paperless-ngx.name" . }}-redis

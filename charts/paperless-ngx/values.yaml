@@ -98,6 +98,8 @@ paperless:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  strategy:
+    type: Recreate
 
 postgresql:
   enabled: true
@@ -119,6 +121,8 @@ postgresql:
     storageClass: ""
     existingClaim: ""
   resources: {}
+  strategy:
+    type: Recreate
 
 redis:
   enabled: true
@@ -136,6 +140,8 @@ redis:
     storageClass: ""
     existingClaim: ""
   resources: {}
+  strategy:
+    type: Recreate
 
 gotenberg:
   enabled: true
@@ -150,6 +156,8 @@ gotenberg:
     - "--chromium-disable-javascript=true"
     - "--chromium-allow-list=file:///tmp/.*"
   resources: {}
+  strategy:
+    type: Recreate
 
 tika:
   enabled: true
@@ -160,6 +168,8 @@ tika:
   service:
     port: 9998
   resources: {}
+  strategy:
+    type: Recreate
 
 imagePullSecrets: []
 nameOverride: ""
