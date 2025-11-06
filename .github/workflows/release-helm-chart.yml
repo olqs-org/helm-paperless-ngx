@@ -88,22 +88,30 @@ jobs:
           values_file="charts/paperless-ngx/values.yaml"
           readme_file="charts/paperless-ngx/README.md"
           
-          # Extract versions from values.yaml - paperless has different indentation
-          paperless_repo=$(grep -A 3 "^paperless:" "$values_file" | grep "^  repository:" | awk '{print $2}' | tr -d '"')
-          paperless_version=$(grep -A 4 "^paperless:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
+          # Extract versions from values.yaml - all services have same structure: 4-space indentation for repository and tag
+          # Use grep with context to find repository and tag within each service section
+          paperless_repo=$(grep -A 5 "^paperless:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
+          paperless_version=$(grep -A 5 "^paperless:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
           
-          # Other services have 4-space indentation for repository, 6-space for tag
           postgres_repo=$(grep -A 5 "^postgresql:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
-          postgres_version=$(grep -A 6 "^postgresql:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          postgres_version=$(grep -A 5 "^postgresql:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
           
           redis_repo=$(grep -A 5 "^redis:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
-          redis_version=$(grep -A 6 "^redis:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          redis_version=$(grep -A 5 "^redis:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
           
           gotenberg_repo=$(grep -A 5 "^gotenberg:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
-          gotenberg_version=$(grep -A 6 "^gotenberg:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          gotenberg_version=$(grep -A 5 "^gotenberg:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
           
           tika_repo=$(grep -A 5 "^tika:" "$values_file" | grep "^    repository:" | awk '{print $2}' | tr -d '"')
-          tika_version=$(grep -A 6 "^tika:" "$values_file" | grep "^      tag:" | awk '{print $2}' | tr -d '"')
+          tika_version=$(grep -A 5 "^tika:" "$values_file" | grep "^    tag:" | awk '{print $2}' | tr -d '"')
+          
+          # Debug output
+          echo "Extracted versions:"
+          echo "  paperless: ${paperless_repo}:${paperless_version}"
+          echo "  postgres: ${postgres_repo}:${postgres_version}"
+          echo "  redis: ${redis_repo}:${redis_version}"
+          echo "  gotenberg: ${gotenberg_repo}:${gotenberg_version}"
+          echo "  tika: ${tika_repo}:${tika_version}"
           
           # Update README with extracted versions
           sed -i "s|- Paperless-ngx: \`.*\`|- Paperless-ngx: \`${paperless_repo}:${paperless_version}\`|" "$readme_file"
