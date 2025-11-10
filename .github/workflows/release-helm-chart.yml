@@ -44,6 +44,7 @@ jobs:
         id: bump_version
         run: |
           chart_file="charts/paperless-ngx/Chart.yaml"
+          values_file="charts/paperless-ngx/values.yaml"
           current_version=$(grep '^version:' "$chart_file" | awk '{print $2}')
           IFS='.' read -r major minor patch <<<"$current_version"
           if [ -z "$major" ] || [ -z "$minor" ] || [ -z "$patch" ]; then
@@ -53,6 +54,15 @@ jobs:
           if ! [[ $patch =~ ^[0-9]+$ ]]; then
             echo "Chart patch version must be numeric, found: $patch" >&2
             exit 1
+          fi
+          paperless_tag=$(grep -A 5 "^paperless:" "$values_file" | grep "^    tag:" | head -1 | awk '{print $2}' | tr -d '"')
+          if [ -z "$paperless_tag" ]; then
+            echo "Unable to determine paperless image tag from $values_file" >&2
+            exit 1
+          fi
+          current_app_version=$(grep '^appVersion:' "$chart_file" | awk '{print $2}' | tr -d '"')
+          if [ "$current_app_version" != "$paperless_tag" ]; then
+            sed -i "s/^appVersion: .*/appVersion: \"${paperless_tag}\"/" "$chart_file"
           fi
           new_patch=$((patch + 1))
           new_version="${major}.${minor}.${new_patch}"
