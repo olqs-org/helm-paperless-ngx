@@ -88,3 +88,7 @@ helm uninstall paperless
 ```
 
 This removes all Kubernetes resources created by the chart. Persistent volumes are not deleted by default.
+
+## Support
+
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/olqs-org/helm-paperless-ngx).
