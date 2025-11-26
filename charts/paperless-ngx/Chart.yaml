@@ -4,3 +4,4 @@ description: A Helm chart for deploying Paperless-ngx with optional PostgreSQL, 
 type: application
 version: 0.1.48
 appVersion: "2.20.0"
+icon: https://raw.githubusercontent.com/olqs-org/helm-paperless-ngx/refs/heads/main/paperless-ngx.icon.svg
