@@ -128,7 +128,7 @@ redis:
   enabled: true
   image:
     repository: docker.io/library/redis
-    tag: "8.2.3"
+    tag: "8.4.0"
     pullPolicy: IfNotPresent
   service:
     port: 6379
