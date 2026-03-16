@@ -22,7 +22,7 @@ The default images and tags are configured in `values.yaml`:
 - Paperless-ngx: `ghcr.io/paperless-ngx/paperless-ngx:2.20.11`
 - PostgreSQL: `docker.io/library/postgres:18.2`
 - Redis: `docker.io/library/redis:8.6.1`
-- Gotenberg: `docker.io/gotenberg/gotenberg:8.26`
+- Gotenberg: `docker.io/gotenberg/gotenberg:8.27`
 - Apache Tika: `docker.io/apache/tika:3.2.3.0`
 
 You can override these through the `values.yaml` file or with `--set` flags.
