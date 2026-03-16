@@ -19,7 +19,7 @@ This Helm chart deploys the Paperless-ngx application along with its optional de
 
 The default images and tags are configured in `values.yaml`:
 
-- Paperless-ngx: `ghcr.io/paperless-ngx/paperless-ngx:2.20.7`
+- Paperless-ngx: `ghcr.io/paperless-ngx/paperless-ngx:2.20.11`
 - PostgreSQL: `docker.io/library/postgres:18.2`
 - Redis: `docker.io/library/redis:8.6.1`
 - Gotenberg: `docker.io/gotenberg/gotenberg:8.26`
