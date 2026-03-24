@@ -163,7 +163,7 @@ tika:
   enabled: true
   image:
     repository: docker.io/apache/tika
-    tag: "3.2.3.0"
+    tag: "3.3.0.0"
     pullPolicy: IfNotPresent
   service:
     port: 9998
