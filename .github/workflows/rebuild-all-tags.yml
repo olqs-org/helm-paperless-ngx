@@ -1,0 +1,83 @@
+name: Rebuild All Tags
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rebuild-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.3
+
+      - name: Install Helm CM Push plugin
+        run: helm plugin install https://github.com/chartmuseum/helm-push.git
+
+      - name: Ensure chart repository credentials exist
+        env:
+          CHARTS_REPO_USERNAME: ${{ secrets.CHARTS_REPO_USERNAME }}
+          CHARTS_REPO_PASSWORD: ${{ secrets.CHARTS_REPO_PASSWORD }}
+          CHARTS_REPO_URL: ${{ secrets.CHARTS_REPO_URL }}
+        run: |
+          if [ -z "${CHARTS_REPO_USERNAME}" ]; then
+            echo "CHARTS_REPO_USERNAME fehlt." >&2
+            exit 1
+          fi
+          if [ -z "${CHARTS_REPO_PASSWORD}" ]; then
+            echo "CHARTS_REPO_PASSWORD fehlt." >&2
+            exit 1
+          fi
+          if [ -z "${CHARTS_REPO_URL}" ]; then
+            echo "CHARTS_REPO_URL fehlt." >&2
+            exit 1
+          fi
+
+      - name: Rebuild and push all tags
+        env:
+          CHARTS_REPO_USERNAME: ${{ secrets.CHARTS_REPO_USERNAME }}
+          CHARTS_REPO_PASSWORD: ${{ secrets.CHARTS_REPO_PASSWORD }}
+          CHARTS_REPO_URL: ${{ secrets.CHARTS_REPO_URL }}
+        run: |
+          TAGS=$(git tag -l "v*" | sort -V)
+          
+          for tag in $TAGS; do
+            echo "====================================="
+            echo "Processing tag: $tag"
+            echo "====================================="
+            
+            git checkout "$tag"
+            
+            CHART_DIR=$(find charts -maxdepth 1 -mindepth 1 -type d | head -n 1)
+            
+            if [ -z "$CHART_DIR" ]; then
+              echo "No chart directory found for tag $tag, skipping..."
+              continue
+            fi
+            
+            echo "Packaging $CHART_DIR for tag $tag..."
+            rm -f *.tgz
+            
+            helm package "$CHART_DIR"
+            chart_file=$(ls *.tgz | head -n 1)
+            
+            if [ -n "$chart_file" ]; then
+              echo "Pushing $chart_file to repository..."
+              helm cm-push -f "$chart_file" "${CHARTS_REPO_URL}" \
+                --username "${CHARTS_REPO_USERNAME}" \
+                --password "${CHARTS_REPO_PASSWORD}"
+            else
+              echo "Failed to package chart for tag $tag"
+            fi
+            
+            git reset --hard
+            git clean -fd
+          done
+          
+          git checkout main
