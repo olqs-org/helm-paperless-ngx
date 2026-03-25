@@ -2,7 +2,7 @@ paperless:
   replicaCount: 1
   image:
     repository: ghcr.io/paperless-ngx/paperless-ngx
-    tag: "2.20.11"
+    tag: "2.20.13"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
